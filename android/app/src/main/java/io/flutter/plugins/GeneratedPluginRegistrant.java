@@ -1,8 +1,6 @@
 package io.flutter.plugins;
 
 import io.flutter.plugin.common.PluginRegistry;
-import com.apptreesoftware.barcodescan.BarcodeScanPlugin;
-import com.baseflow.permissionhandler.PermissionHandlerPlugin;
 
 /**
  * Generated file. Do not edit.
@@ -12,8 +10,6 @@ public final class GeneratedPluginRegistrant {
     if (alreadyRegisteredWith(registry)) {
       return;
     }
-    BarcodeScanPlugin.registerWith(registry.registrarFor("com.apptreesoftware.barcodescan.BarcodeScanPlugin"));
-    PermissionHandlerPlugin.registerWith(registry.registrarFor("com.baseflow.permissionhandler.PermissionHandlerPlugin"));
   }
 
   private static boolean alreadyRegisteredWith(PluginRegistry registry) {
