@@ -1,4 +1,4 @@
-#Mon Apr 29 08:39:00 CEST 2019
+#Mon Apr 29 09:02:09 CEST 2019
 base.0=C\:\\Users\\Frederik\\Desktop\\madspilds_app\\build\\app\\intermediates\\transforms\\dexMerger\\debug\\0
 path.0=classes.dex
 renamed.0=classes.dex

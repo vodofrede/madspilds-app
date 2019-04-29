@@ -1,5 +1,5 @@
 #Internal package file, do not edit.
-#Mon Apr 29 08:39:01 CEST 2019
+#Mon Apr 29 09:02:10 CEST 2019
 4.path=lib/armeabi-v7a/libflutter.so
 8.set=ASSET
 6.path=flutter_assets/LICENSE

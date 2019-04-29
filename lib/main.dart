@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+// import 'package:barcode_scan/barcode_scan.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(MadApp());
 
-class MyApp extends StatelessWidget {
+class MadApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -18,3 +19,15 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+// class MadListe extends StatefulWidget {
+//   @override
+//   MadListeState createState() => MadListeState();
+// }
+
+// class MadListeState extends State<MadListe> {
+//   @override
+//   Widget build(BuildContext build) {
+//     Text("wowie");
+//   }
+// }
