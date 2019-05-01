@@ -1,65 +1,26 @@
 import 'package:flutter/material.dart';
+import 'forside.dart';
+import 'varetyper.dart';
+import 'indstillinger.dart';
+import 'stregkodescan.dart';
 
-void main() => runApp(MadApp());
+void main() => runApp(Varer());
 
-class MadApp extends StatelessWidget {
+class Varer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Welcome to Flutter',
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text("Varer"),
-          actions: <Widget>[
-            IconButton(
-              icon: Icon(Icons.sort),
-              tooltip: "Sortér",
-              onPressed: () {},
-            ),
-          ],
-        ),
-        body: Center(
-          child: MadListe(),
-        ),
-        drawer: Drawer(
-          child: ListView(
-            padding: EdgeInsets.zero,
-            children: <Widget>[
-              DrawerHeader(
-                child: Text("Madspilds app", ),
-                decoration: BoxDecoration(
-                  color: Colors.blue
-                ),
-              ),
-              ListTile(
-                title: Text("Varer"),
-                onTap: () {
-                  Navigator.pop(context);
-                },
-              ),
-              ListTile(
-                title: Text("Indstillinger"),
-                onTap: () {
-                  Navigator.pop(context);
-                },
-              ),
-            ],
-          ),
-        ),
+      title: 'Madspild',
+      theme: new ThemeData(
+        primarySwatch: Colors.lightBlue,
       ),
+      home: Forside(),
+      routes: <String, WidgetBuilder> {
+        '/forside': (BuildContext context) => new Forside(),
+        '/varetyper': (BuildContext context) => new VareTyper(),
+        '/indstillinger': (BuildContext context) => new Indstillinger(),
+        '/stregkodescanner': (BuildContext context) => new StregkodeScanner(),
+      },
     );
   }
 }
-
-class MadListe extends StatefulWidget {
-  @override
-  MadListeState createState() => MadListeState();
-}
-
-class MadListeState extends State<MadListe> {
-  @override
-  Widget build(BuildContext build) {
-    return Text("Hackerman got you HACKED!!! CUNT");
-  }
-}
-
