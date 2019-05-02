@@ -23,23 +23,25 @@ class ForsideState extends State<Forside> {
         child: Text("Madliste"),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      floatingActionButton: Row(
+      floatingActionButton: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
-          FloatingActionButton(
+          FloatingActionButton.extended(
             heroTag: null,
-            child: Icon(Icons.add),
+            label: Text("Scan "),
+            icon: Icon(Icons.camera_enhance),
             onPressed: () {
-              Navigator.of(context).pushNamed('/varetyper');
+              Navigator.of(context).pushNamed('/stregkodescanner');
             },
           ),
           Container(width: 13.0, height: 13.0),
-          FloatingActionButton(
+          FloatingActionButton.extended(
             heroTag: null,
-            child: Icon(Icons.camera_alt),
+            label: Text("Tilføj"),
+            icon: Icon(Icons.add),
             onPressed: () {
-              Navigator.of(context).pushNamed('/stregkodescanner');
+              Navigator.of(context).pushNamed('/varetyper');
             },
           ),
         ],

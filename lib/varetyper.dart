@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
-class VareTyper extends StatelessWidget {
+import 'varetype_data.dart';
+
+class VareTypeListe extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -17,4 +19,11 @@ class VareTyper extends StatelessWidget {
       ),
     );
   }
+}
+
+class _VareTypeGenstand extends ListTile {
+  _VareTypeGenstand(VareType vareType): super(
+    title: Text(vareType.vareNavn),
+    subtitle: Text("Varer " + vareType.varighed + " dage"),
+  );
 }

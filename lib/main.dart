@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'forside.dart';
 import 'varetyper.dart';
 import 'indstillinger.dart';
@@ -17,7 +18,7 @@ class Varer extends StatelessWidget {
       home: Forside(),
       routes: <String, WidgetBuilder> {
         '/forside': (BuildContext context) => new Forside(),
-        '/varetyper': (BuildContext context) => new VareTyper(),
+        '/varetyper': (BuildContext context) => new VareTypeListe(),
         '/indstillinger': (BuildContext context) => new Indstillinger(),
         '/stregkodescanner': (BuildContext context) => new StregkodeScanner(),
       },
