@@ -1,11 +1,16 @@
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:quiver/core.dart';
+
 import 'dart:async';
 
 class DatabaseEjer {
   static final _databaseNavn = "madvare_database.db";
   static final _databaseVersion = 1;
   static Database _database;
+
+  DatabaseEjer._privateConstructor();
+  static final DatabaseEjer instans =  DatabaseEjer._privateConstructor();
 
   Future<Database> get database async {
     if (_database != null) return _database;
@@ -30,16 +35,21 @@ class DatabaseEjer {
         id INTEGER PRIMARY KEY,
         navn TEXT NOT NULL,
         kategori TEXT
-      );
+      )
+    ''');
+    await db.execute('''
       CREATE TABLE madvarer (
         id INTEGER PRIMARY KEY,
-        type TEXT NOT NULL,
+        FOREIGN KEY(type_id) REFERENCES madtyper(id),
         antal INTEGER NOT NULL,
-        udloebsdato TEXT,
-      );
+        udloebsdato DATETIME
+      )
     ''');
   }
 
+  //
+  // Funktioner for madtyper 
+  //
   Future<int> indsaetMadType(MadType madType) async {
     Database db = await database;
     int id = await db.insert(
@@ -64,6 +74,19 @@ class DatabaseEjer {
     }
 
     return null;
+  }
+
+  Future<MadType> findEllerIndsaetMadType(MadType madType) async {
+    List<MadType> madTyper = await alleMadTyper();
+
+    if (madTyper.contains(madType)) {
+      print("Fandt madtype: " + madType.toString());
+      return madType; 
+    } else {
+      print("Indsætter madtype: " + madType.toString());
+      indsaetMadType(madType);
+      return madType;
+    }
   }
 
   Future<void> sletMadType(int id) async {
@@ -100,6 +123,71 @@ class DatabaseEjer {
       whereArgs: [madType.id],
     );
   }
+
+  //
+  // Funktioner for madvarer (varer, du tjekker ind)
+  //
+  Future<int> indsaetMadVare(MadVare madVare) async {
+    Database db = await database;
+    int id = await db.insert(
+      'madvarer', 
+      madVare.toMap(), 
+      conflictAlgorithm: ConflictAlgorithm.replace
+    );
+    return id;
+  }
+
+  Future<MadVare> findMadVare(int id) async {
+    Database db = await database;
+    List<Map> maps = await db.query(
+      'madvarer',
+      columns: ['id', 'type_id', 'antal', 'udloebsdato'],
+      where: 'id = ?',
+      whereArgs: [id]
+    );
+
+    if (maps.length > 0) {
+      return MadVare.fromMap(maps.first); 
+    }
+
+    return null;
+  }
+
+  Future<void> sletMadVare(int id) async {
+    Database db = await database;
+
+    await db.delete(
+      'madvarer',
+      where: "id = ?",
+      whereArgs: [id],
+    );
+  }
+
+  Future<List<MadVare>> alleMadVarer() async {
+    Database db = await database;
+
+    final List<Map<String, dynamic>> maps = await db.query('madvarer');
+
+    return List.generate(maps.length, (i) {
+      return MadVare(
+        id: maps[i]['id'],
+        type_id: maps[i]['type_id'],
+        antal: maps[i]['antal'],
+        udloebsdato: maps[i]['udloebsdato'],
+      );
+    });
+  }
+
+  Future<void> opdaterMadVare(MadVare madVare) async {
+    Database db = await database;
+
+    await db.update(
+      'madvarer', 
+      madVare.toMap(),
+      where: "id = ?",
+      whereArgs: [madVare.id],
+    );
+  }
 }
 
 class MadType {
@@ -122,12 +210,45 @@ class MadType {
       'kategori': kategori,
     };
   }
+
+  @override
+  String toString() {
+    return "(" + this.navn + ", " + this.kategori + ")";
+  }
+
+  bool operator ==(o) => o is MadType && navn.toLowerCase() == o.navn.toLowerCase() && kategori.toLowerCase() == o.kategori.toLowerCase();
+  int get hashCode => hash2(navn.toLowerCase().hashCode, kategori.toLowerCase().hashCode);
 }
 
 class MadVare {
-  MadType type;
+  int id;
+  int type_id;
   int antal;
   DateTime udloebsdato;
 
-  MadVare({this.type, this.antal, this.udloebsdato});
+  MadVare({this.id, this.type_id, this.antal, this.udloebsdato});
+
+  MadVare.fromMap(Map<String, dynamic> map) {
+    id = map['id'];
+    type_id = map['type'];
+    antal = map['antal'];
+    udloebsdato = map['udloebsdato'];
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'type': type_id,
+      'antal': antal,
+      'udloebsdato': udloebsdato,
+    };
+  }
+
+  @override
+  String toString() {
+    return this.antal.toString() + " af ID:" + this.type_id.toString() + ", udløber " + udloebsdato.weekday.toString();
+  }
+
+  bool operator ==(o) => o is MadVare && type_id == o.type_id && antal == o.antal && udloebsdato == o.udloebsdato;
+  int get hashCode => hash3(type_id.hashCode, antal.hashCode, udloebsdato.hashCode);
 }

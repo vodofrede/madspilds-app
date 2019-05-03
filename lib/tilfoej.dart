@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:madspilds_app/data.dart';
 
 class Tilfoej extends StatefulWidget {
 
@@ -9,8 +10,10 @@ class Tilfoej extends StatefulWidget {
 class _TilfoejState extends State<Tilfoej> {
   final navneController = TextEditingController();
   final datoController = TextEditingController();
+  final antalController = TextEditingController();
+  final kategoriController = TextEditingController();
+
   DateTime udloebsDato = DateTime.now();
-  
 
   @override
   void dispose() {
@@ -34,6 +37,25 @@ class _TilfoejState extends State<Tilfoej> {
     }
   }
 
+  Future<void> _indsaet() async {
+    DatabaseEjer db = DatabaseEjer.instans;
+
+    MadType madType = MadType();
+    madType.navn = navneController.text;
+    madType.kategori = kategoriController.text;
+
+    madType = await db.findEllerIndsaetMadType(madType);
+
+    MadVare madVare = MadVare();
+    madVare.type_id = madType.id;
+    madVare.antal = int.parse(antalController.text); 
+    madVare.udloebsdato = DateTime.tryParse(datoController.text);
+
+    db.indsaetMadVare(madVare);
+
+    print(await db.alleMadVarer());
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,7 +74,24 @@ class _TilfoejState extends State<Tilfoej> {
                   hintText: "Navn",
                 ),
               ),
-              Container(height: 5.0),
+              Container(height: 8.0),
+              TextFormField(
+                controller: kategoriController,
+                decoration: InputDecoration(
+                  icon: Icon(Icons.category),
+                  hintText: "Kategori (valgfrit)",
+                ),
+              ),
+              Container(height: 8.0),
+              TextFormField(
+                keyboardType: TextInputType.number,
+                controller: antalController,
+                decoration: InputDecoration(
+                  icon: Icon(Icons.format_list_numbered),
+                  hintText: "Antal"                  
+                ),
+              ),
+              Container(height: 8.0),
               InkWell(
                 onTap: () => _vaelgDato(context),
                 child: IgnorePointer(
@@ -74,8 +113,7 @@ class _TilfoejState extends State<Tilfoej> {
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.check),
         onPressed: () {
-          print(navneController.text);
-          Navigator.pop(context);
+          _indsaet();
         },
       ),
     );
