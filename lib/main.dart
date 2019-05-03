@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
 
 import 'forside.dart';
-import 'varetyper.dart';
+import 'tilfoej.dart';
 import 'indstillinger.dart';
 import 'stregkodescan.dart';
+import 'data.dart';
 
-void main() => runApp(Varer());
+void main() async {
+  runApp(Varer());
+}
 
 class Varer extends StatelessWidget {
   @override
@@ -18,7 +23,7 @@ class Varer extends StatelessWidget {
       home: Forside(),
       routes: <String, WidgetBuilder> {
         '/forside': (BuildContext context) => new Forside(),
-        '/varetyper': (BuildContext context) => new VareTypeListe(),
+        '/tilfoej': (BuildContext context) => new Tilfoej(),
         '/indstillinger': (BuildContext context) => new Indstillinger(),
         '/stregkodescanner': (BuildContext context) => new StregkodeScanner(),
       },

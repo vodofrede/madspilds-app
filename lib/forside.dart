@@ -10,6 +10,7 @@ class ForsideState extends State<Forside> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: Text("Varer"),
         actions: <Widget>[
           IconButton(
@@ -41,7 +42,7 @@ class ForsideState extends State<Forside> {
             label: Text("Tilføj"),
             icon: Icon(Icons.add),
             onPressed: () {
-              Navigator.of(context).pushNamed('/varetyper');
+              Navigator.of(context).pushNamed('/tilfoej');
             },
           ),
         ],
