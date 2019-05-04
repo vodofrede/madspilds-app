@@ -47,7 +47,7 @@ class _TilfoejState extends State<Tilfoej> {
     madType = await db.findEllerIndsaetMadType(madType);
 
     MadVare madVare = MadVare();
-    madVare.type_id = madType.id;
+    madVare.id = madType.id;
     madVare.antal = int.parse(antalController.text); 
     madVare.udloebsdato = DateTime.tryParse(datoController.text);
 

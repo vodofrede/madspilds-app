@@ -25,11 +25,12 @@ class DatabaseEjer {
       sti,
       version: _databaseVersion,
       onCreate: _onCreate,
-    
+      onUpgrade: _onUpgrade,
     );
   }
 
   Future _onCreate(Database db, int version) async {
+    print("Creating database");
     await db.execute('''
       CREATE TABLE madtyper (
         id INTEGER PRIMARY KEY,
@@ -37,10 +38,30 @@ class DatabaseEjer {
         kategori TEXT
       )
     ''');
+
     await db.execute('''
       CREATE TABLE madvarer (
         id INTEGER PRIMARY KEY,
-        FOREIGN KEY(type_id) REFERENCES madtyper(id),
+        type_id INTEGER,
+        antal INTEGER NOT NULL,
+        udloebsdato DATETIME
+      )
+    ''');
+  }
+
+  Future _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    await db.execute('''
+      CREATE TABLE madtyper (
+        id INTEGER PRIMARY KEY,
+        navn TEXT NOT NULL,
+        kategori TEXT
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE madvarer (
+        id INTEGER PRIMARY KEY,
+        type_id INTEGER,
         antal INTEGER NOT NULL,
         udloebsdato DATETIME
       )
@@ -230,7 +251,7 @@ class MadVare {
 
   MadVare.fromMap(Map<String, dynamic> map) {
     id = map['id'];
-    type_id = map['type'];
+    type_id = map['type_id'];
     antal = map['antal'];
     udloebsdato = map['udloebsdato'];
   }
@@ -238,7 +259,7 @@ class MadVare {
   Map<String, dynamic> toMap() {
     return {
       'id': id,
-      'type': type_id,
+      'type_id': type_id,
       'antal': antal,
       'udloebsdato': udloebsdato,
     };
