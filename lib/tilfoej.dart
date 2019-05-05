@@ -44,16 +44,18 @@ class _TilfoejState extends State<Tilfoej> {
     madType.navn = navneController.text;
     madType.kategori = kategoriController.text;
 
-    madType = await db.findEllerIndsaetMadType(madType);
+    MadType dbMadType = await db.findEllerIndsaetMadType(madType);
+
+    print(dbMadType);
 
     MadVare madVare = MadVare();
-    madVare.id = madType.id;
+    madVare.type_id = dbMadType.id;
     madVare.antal = int.parse(antalController.text); 
-    madVare.udloebsdato = DateTime.tryParse(datoController.text);
+    madVare.udloebsdato = udloebsDato;
 
     db.indsaetMadVare(madVare);
 
-    print(await db.alleMadVarer());
+    Navigator.of(context).pop();
   }
 
   @override

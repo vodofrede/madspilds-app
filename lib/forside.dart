@@ -2,6 +2,8 @@ import 'package:barcode_scan/barcode_scan.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'data.dart';
+
 class Forside extends StatefulWidget {
   @override
   ForsideState createState() => ForsideState();
@@ -9,6 +11,20 @@ class Forside extends StatefulWidget {
 
 class ForsideState extends State<Forside> {
   String result = "";
+  DatabaseEjer db = DatabaseEjer.instans;
+  Future<List<MadVare>> madVarer;
+
+  @override
+  void initState() {
+    super.initState();
+    madVarer = db.alleMadVarer();
+  }
+
+  @override
+  void setState(fn) {
+    super.setState(fn);
+    madVarer = db.alleMadVarer();
+  }
 
   void _scan() async {
     try {
@@ -51,8 +67,35 @@ class ForsideState extends State<Forside> {
           ),
         ],
       ),
-      body: Center(
-        child: Text("Madliste"),
+      body: FutureBuilder<List<MadVare>>(
+        future: madVarer,
+        initialData: List<MadVare>(),
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          if (snapshot.hasError) print(snapshot.error);
+          if (snapshot.hasData) {
+            return ListView.builder(
+              itemCount: snapshot.data.length,
+              itemBuilder: (context, position) {
+                return FutureBuilder(
+                  future: snapshot.data[position].findType(),
+                  initialData: MadType(),
+                  builder: (BuildContext _context, AsyncSnapshot _snapshot) {
+                    return Card(
+                      child: ListTile(
+                        title: Text("${_snapshot.data.navn}"),
+                        subtitle: Text("${_snapshot.data.kategori}"),
+                        trailing: Text("Udløber om ${snapshot.data[position].dageTilbage()} dage."),
+                        onTap: () {},
+                      ),
+                    );
+                  }
+                );
+              },
+            );
+          } else {
+            return Center(child: CircularProgressIndicator());
+          }
+        },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       floatingActionButton: Column(
@@ -73,7 +116,7 @@ class ForsideState extends State<Forside> {
             label: Text("Tilføj"),
             icon: Icon(Icons.add),
             onPressed: () {
-              Navigator.of(context).pushNamed('/tilfoej');
+              _tilfoejOgRefresh(context);
             },
           ),
         ],
@@ -106,5 +149,10 @@ class ForsideState extends State<Forside> {
         ),
       ),
     );
+  }
+
+  _tilfoejOgRefresh(BuildContext context) async {
+    await Navigator.pushNamed(context, '/tilfoej');
+    setState((){});
   }
 }

@@ -42,9 +42,9 @@ class DatabaseEjer {
     await db.execute('''
       CREATE TABLE madvarer (
         id INTEGER PRIMARY KEY,
-        type_id INTEGER,
+        type_id INTEGER, 
         antal INTEGER NOT NULL,
-        udloebsdato DATETIME
+        udloebsdato TEXT
       )
     ''');
   }
@@ -63,7 +63,7 @@ class DatabaseEjer {
         id INTEGER PRIMARY KEY,
         type_id INTEGER,
         antal INTEGER NOT NULL,
-        udloebsdato DATETIME
+        udloebsdato TEXT
       )
     ''');
   }
@@ -101,11 +101,13 @@ class DatabaseEjer {
     List<MadType> madTyper = await alleMadTyper();
 
     if (madTyper.contains(madType)) {
-      print("Fandt madtype: " + madType.toString());
-      return madType; 
+      MadType fundetMadType = madTyper[madTyper.indexOf(madType)];
+      print("Fandt madtype: " + fundetMadType.toString());
+      return fundetMadType; 
     } else {
+      int madtypeId = await indsaetMadType(madType);
+      madType.id = madtypeId;
       print("Indsætter madtype: " + madType.toString());
-      indsaetMadType(madType);
       return madType;
     }
   }
@@ -123,15 +125,14 @@ class DatabaseEjer {
   Future<List<MadType>> alleMadTyper() async {
     Database db = await database;
 
-    final List<Map<String, dynamic>> maps = await db.query('madtyper');
+    final List<Map> maps = await db.query("madtyper");
+    List<MadType> madTyper = List<MadType>();
 
-    return List.generate(maps.length, (i) {
-      return MadType(
-        id: maps[i]['id'],
-        navn: maps[i]['navn'],
-        kategori: maps[i]['kategori'],
-      );
-    });
+    for (Map map in maps) {
+      madTyper.add(MadType.fromMap(map));
+    }
+
+    return madTyper;
   }
 
   Future<void> opdaterMadType(MadType madType) async {
@@ -187,16 +188,14 @@ class DatabaseEjer {
   Future<List<MadVare>> alleMadVarer() async {
     Database db = await database;
 
-    final List<Map<String, dynamic>> maps = await db.query('madvarer');
+    final List<Map> maps = await db.query("madvarer");
+    List<MadVare> madVarer = List<MadVare>();
 
-    return List.generate(maps.length, (i) {
-      return MadVare(
-        id: maps[i]['id'],
-        type_id: maps[i]['type_id'],
-        antal: maps[i]['antal'],
-        udloebsdato: maps[i]['udloebsdato'],
-      );
-    });
+    for (Map map in maps) {
+      madVarer.add(MadVare.fromMap(map));
+    }
+
+    return madVarer;
   }
 
   Future<void> opdaterMadVare(MadVare madVare) async {
@@ -234,7 +233,7 @@ class MadType {
 
   @override
   String toString() {
-    return "(" + this.navn + ", " + this.kategori + ")";
+    return "ID:" + this.id.toString() + " " + this.navn;
   }
 
   bool operator ==(o) => o is MadType && navn.toLowerCase() == o.navn.toLowerCase() && kategori.toLowerCase() == o.kategori.toLowerCase();
@@ -253,7 +252,7 @@ class MadVare {
     id = map['id'];
     type_id = map['type_id'];
     antal = map['antal'];
-    udloebsdato = map['udloebsdato'];
+    udloebsdato = DateTime.parse(map['udloebsdato']);
   }
 
   Map<String, dynamic> toMap() {
@@ -261,13 +260,23 @@ class MadVare {
       'id': id,
       'type_id': type_id,
       'antal': antal,
-      'udloebsdato': udloebsdato,
+      'udloebsdato': udloebsdato.toIso8601String(),
     };
+  }
+
+  int dageTilbage() {
+    return udloebsdato.difference(DateTime.now()).inDays;
+  }
+
+  Future<MadType> findType() async {
+    DatabaseEjer db = DatabaseEjer.instans;
+
+    return db.findMadType(type_id);
   }
 
   @override
   String toString() {
-    return this.antal.toString() + " af ID:" + this.type_id.toString() + ", udløber " + udloebsdato.weekday.toString();
+    return this.antal.toString() + " af ID:" + this.type_id.toString() + ", udløber " + this.udloebsdato.toString();
   }
 
   bool operator ==(o) => o is MadVare && type_id == o.type_id && antal == o.antal && udloebsdato == o.udloebsdato;
