@@ -11,10 +11,15 @@ void main() async {
 class Varer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+      ErrorWidget.builder = (FlutterErrorDetails errorDetails) {
+      return Text("");
+    };
+
     return MaterialApp(
       title: 'Madspild',
       theme: new ThemeData(
-        primarySwatch: Colors.lightBlue,
+        primarySwatch: Colors.green,
+        fontFamily: 'NotoSans',
       ),
       home: Forside(),
       routes: <String, WidgetBuilder> {
